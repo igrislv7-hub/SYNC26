@@ -18,6 +18,34 @@ OFFICIAL 2026 GRID DATA (Use this for "Home Race" calculations):
 11. TGR Haas F1 Team (USA): Esteban Ocon (#31), Oliver Bearman (#87). Engine: Ferrari.
 `;
 
+const PROVISIONAL_CALENDAR_2026 = `
+STRICT 2026 CALENDAR SEQUENCE (Updated based on User CSV Request):
+1. Australian GP (Albert Park) - March 8, 2026 (Season Opener)
+2. Chinese GP (Shanghai) - March 15, 2026 (Sprint Race)
+3. Japanese GP (Suzuka) - March 29, 2026
+4. Bahrain GP (Sakhir) - April 12, 2026 (Night Race)
+5. Saudi Arabian GP (Jeddah) - April 19, 2026
+6. Miami GP (Miami) - May 3, 2026 (Sprint Race)
+7. Canadian GP (Montreal) - May 24, 2026
+8. Monaco GP (Monaco) - June 7, 2026
+9. Barcelona GP (Catalunya) - June 14, 2026
+10. Austrian GP (Red Bull Ring) - June 28, 2026
+11. British GP (Silverstone) - July 5, 2026
+12. Belgian GP (Spa) - July 19, 2026
+13. Hungarian GP (Hungaroring) - July 26, 2026
+14. Dutch GP (Zandvoort) - August 23, 2026
+15. Italian GP (Monza) - September 6, 2026
+16. Spanish GP (Madrid Street Circuit) - September 13, 2026 (New Circuit)
+17. Azerbaijan GP (Baku) - September 26, 2026 (Saturday Race)
+18. Singapore GP (Marina Bay) - October 11, 2026
+19. United States GP (Austin) - October 25, 2026
+20. Mexico City GP (Hermanos Rodriguez) - November 1, 2026
+21. Sao Paulo GP (Interlagos) - November 8, 2026
+22. Las Vegas GP (Las Vegas) - November 21, 2026 (Saturday Night)
+23. Qatar GP (Lusail) - November 29, 2026
+24. Abu Dhabi GP (Yas Marina) - December 6, 2026
+`;
+
 // Schema for the F1 Race data
 const f1RaceSchema: Schema = {
   type: Type.ARRAY,
@@ -60,19 +88,21 @@ export const fetchF1Schedule = async (): Promise<F1Race[]> => {
       contents: `Generate a JSON dataset for the Formula 1 2026 Season.
       
       Requirements:
-      1. Provide the projected calendar for the 2026 season including the new Madrid Grand Prix.
-      2. Ensure dates and times are accurate estimates in UTC.
-      3. Identify Sprint weekends accurately (typically 6 per season).
+      1. STRICTLY follow the 'STRICT 2026 CALENDAR SEQUENCE' provided below for the Round Order, Grand Prix Name, and Date. Do not hallucinate other dates.
+      2. For 'time': Estimate the race start time based on typical local race start times (usually 14:00 or 15:00 local, or 20:00/22:00 for night races like Singapore/Vegas) and convert to UTC.
+      3. Identify Sprint weekends (typically 6: China, Miami, Austria, Austin, Brazil, Qatar).
       4. Provide the correct IANA timezone ID for each city.
-      5. For 'trackImageUrl', attempt to find a Wikimedia Commons URL. If unsure, leave empty.
+      5. For 'trackImageUrl', attempt to find a Wikimedia Commons URL.
       6. For 'homeRaceFor', strictly use the grid data below.
+
+      ${PROVISIONAL_CALENDAR_2026}
 
       ${GRID_INFO_2026}
       `,
       config: {
         responseMimeType: "application/json",
         responseSchema: f1RaceSchema,
-        systemInstruction: "You are an expert F1 statistician for the 2026 season. Output strictly valid JSON.",
+        systemInstruction: "You are an expert F1 statistician for the 2026 season. You must adhere strictly to the provided calendar dates and order. Output strictly valid JSON.",
       },
     });
 

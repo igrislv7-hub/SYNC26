@@ -1,9 +1,9 @@
 import React from 'react';
 import { F1Race } from '../types';
 import TrackVisualizer from './Track3D'; 
-import { downloadICS, formatDisplayDate, formatTimeIST, formatTimeLocal, formatWeekendRange } from '../utils/calendarUtils';
+import { downloadICS, generateGoogleCalendarUrl, formatTimeIST, formatTimeLocal, formatWeekendRange } from '../utils/calendarUtils';
 import { getTrackPath } from '../utils/trackData';
-import { Calendar, MapPin, Flag, ChevronRight, Clock, Zap } from 'lucide-react';
+import { MapPin, Clock, Zap, CalendarPlus, Download } from 'lucide-react';
 
 interface RaceCardProps {
   race: F1Race;
@@ -14,6 +14,7 @@ const RaceCard: React.FC<RaceCardProps> = ({ race }) => {
   const istTime = formatTimeIST(race.date, race.time);
   const localTime = formatTimeLocal(race.date, race.time, race.timezoneId);
   const weekendRange = formatWeekendRange(race.weekendStartDate, race.weekendEndDate);
+  const googleUrl = generateGoogleCalendarUrl(race);
 
   return (
     <div className="group bg-f1-dark border-t-4 border-f1-red hover:border-white transition-colors duration-300 flex flex-col relative overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
@@ -110,14 +111,25 @@ const RaceCard: React.FC<RaceCardProps> = ({ race }) => {
 
       </div>
 
-      {/* Action Button */}
-      <button
-        onClick={() => downloadICS(race)}
-        className="mt-auto w-full bg-white text-black font-black uppercase text-sm py-4 tracking-widest hover:bg-f1-red hover:text-white transition-colors duration-200 flex items-center justify-center gap-2"
-      >
-        <span>Sync Calendar</span>
-        <ChevronRight className="w-4 h-4" />
-      </button>
+      {/* Action Buttons */}
+      <div className="mt-auto grid grid-cols-2 border-t border-gray-800">
+        <a
+          href={googleUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-f1-red text-white hover:bg-white hover:text-f1-red font-black text-xs uppercase py-4 flex items-center justify-center gap-2 transition-colors duration-200"
+        >
+          <CalendarPlus className="w-4 h-4" />
+          <span>Google Cal</span>
+        </a>
+        <button
+          onClick={() => downloadICS(race)}
+          className="bg-f1-carbon text-gray-400 hover:bg-white hover:text-black font-bold text-xs uppercase py-4 flex items-center justify-center gap-2 transition-colors duration-200 border-l border-gray-800"
+        >
+          <Download className="w-4 h-4" />
+          <span>Export ICS</span>
+        </button>
+      </div>
     </div>
   );
 };
