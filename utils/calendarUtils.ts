@@ -70,6 +70,47 @@ export const downloadICS = (race: F1Race) => {
   document.body.removeChild(link);
 };
 
+export const generateSeasonICSFile = (races: F1Race[]): string => {
+  const events = races.map(race => {
+    const { start, end } = formatDateToICS(race.date, race.time);
+    return [
+      'BEGIN:VEVENT',
+      `UID:${race.round}-${race.date}@f1sync.app`,
+      `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+      `DTSTART:${start}`,
+      `DTEND:${end}`,
+      `SUMMARY:F1 ${race.grandPrixName} - ${race.city}`,
+      `DESCRIPTION:Formula 1 Round ${race.round} at ${race.circuitName}. ${race.description}`,
+      `LOCATION:${race.circuitName}, ${race.city}, ${race.country}`,
+      'END:VEVENT'
+    ].join('\r\n');
+  }).join('\r\n');
+
+  const fileContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//F1 Calendar Sync//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:F1 2026 Season',
+    events,
+    'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([fileContent], { type: 'text/calendar;charset=utf-8' });
+  return URL.createObjectURL(blob);
+};
+
+export const downloadSeasonICS = (races: F1Race[]) => {
+  const url = generateSeasonICSFile(races);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `f1-2026-full-season.ics`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 export const formatDisplayDate = (dateStr: string, timeStr: string) => {
     try {
         const date = new Date(`${dateStr}T${timeStr}Z`);
