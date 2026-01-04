@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>F1 Calendar Sync</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Titillium Web"', 'sans-serif'],
+            },
+            colors: {
+              f1: {
+                red: '#FF1801', // Brighter F1 Red
+                dark: '#15151E',
+                black: '#101010',
+                gray: '#38383F',
+                silver: '#D1D5DB',
+                carbon: '#1F1F23'
+              }
+            },
+            backgroundImage: {
+              'carbon-pattern': "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')",
+              'checkered': "repeating-conic-gradient(#15151e 0% 25%, transparent 0% 50%) 50% / 20px 20px"
+            },
+            animation: {
+              'spin-slow': 'spin 8s linear infinite',
+              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #101010;
+        color: #ffffff;
+        font-family: 'Titillium Web', sans-serif;
+      }
+      /* Custom scrollbar for webkit */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #15151e;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #FF1801;
+        border-radius: 4px;
+      }
+      .skew-header {
+        transform: skewX(-12deg);
+      }
+      .skew-content {
+        transform: skewX(12deg);
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "name": "F1 Calendar Sync & Visualizer",
+  "description": "A smart F1 companion app that generates the race calendar using Gemini, visualizes tracks in 3D, and exports events to your local timezone.",
+  "requestFramePermissions": []
+}
