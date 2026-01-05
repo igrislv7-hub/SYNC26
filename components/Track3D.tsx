@@ -4,15 +4,16 @@ interface TrackViewProps {
   imageUrl: string;
   circuitName: string;
   fallbackPath?: string | null;
+  className?: string;
 }
 
-const TrackVisualizer: React.FC<TrackViewProps> = ({ imageUrl, circuitName }) => {
+const TrackVisualizer: React.FC<TrackViewProps> = ({ imageUrl, circuitName, className = "h-64" }) => {
   const [hasError, setHasError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div 
-      className="relative w-full h-64 bg-f1-carbon/50 rounded-br-2xl border-l-4 border-f1-red overflow-hidden flex items-center justify-center p-8 relative shadow-[inset_0_0_40px_rgba(0,0,0,0.8)] perspective-1000 group"
+      className={`relative w-full ${className} bg-f1-carbon/50 rounded-br-2xl border-l-4 border-f1-red overflow-hidden flex items-center justify-center p-8 relative shadow-[inset_0_0_40px_rgba(0,0,0,0.8)] perspective-1000 group`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{ perspective: '1000px' }}

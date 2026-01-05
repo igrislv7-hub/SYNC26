@@ -1,21 +1,83 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
-import { F1Race } from "../types";
+import { F1Race, Team } from "../types";
 import { getTrackImage } from "../utils/trackData";
 
-// Detailed 2026 Grid Info as per user request
-const GRID_INFO_2026 = `
+// Structured 2026 Grid Data
+export const OFFICIAL_GRID_2026: Team[] = [
+  {
+    name: "McLaren Mastercard",
+    country: "UK",
+    drivers: [{ name: "Lando Norris", number: 1 }, { name: "Oscar Piastri", number: 81 }],
+    engine: "Mercedes"
+  },
+  {
+    name: "Mercedes-AMG Petronas",
+    country: "Germany",
+    drivers: [{ name: "George Russell", number: 63 }, { name: "Kimi Antonelli", number: 12 }],
+    engine: "Mercedes"
+  },
+  {
+    name: "Oracle Red Bull Racing",
+    country: "Austria",
+    drivers: [{ name: "Max Verstappen", number: 3 }, { name: "Isack Hadjar", number: 6 }],
+    engine: "Red Bull Ford"
+  },
+  {
+    name: "Scuderia Ferrari HP",
+    country: "Italy",
+    drivers: [{ name: "Charles Leclerc", number: 16 }, { name: "Lewis Hamilton", number: 44 }],
+    engine: "Ferrari"
+  },
+  {
+    name: "Atlassian Williams",
+    country: "UK",
+    drivers: [{ name: "Alex Albon", number: 23 }, { name: "Carlos Sainz", number: 55 }],
+    engine: "Mercedes"
+  },
+  {
+    name: "Aston Martin Aramco",
+    country: "UK",
+    drivers: [{ name: "Fernando Alonso", number: 14 }, { name: "Lance Stroll", number: 18 }],
+    engine: "Honda"
+  },
+  {
+    name: "Audi Revolut",
+    country: "Germany",
+    drivers: [{ name: "Nico Hülkenberg", number: 27 }, { name: "Gabriel Bortoleto", number: 5 }],
+    engine: "Audi"
+  },
+  {
+    name: "Cadillac F1 Team",
+    country: "USA",
+    drivers: [{ name: "Sergio Pérez", number: 11 }, { name: "Valtteri Bottas", number: 77 }],
+    engine: "Ferrari"
+  },
+  {
+    name: "BWT Alpine",
+    country: "France",
+    drivers: [{ name: "Pierre Gasly", number: 10 }, { name: "Franco Colapinto", number: 43 }],
+    engine: "Mercedes"
+  },
+  {
+    name: "Visa Cash App RB",
+    country: "Italy",
+    drivers: [{ name: "Liam Lawson", number: 30 }, { name: "Arvid Lindblad", number: 41 }],
+    engine: "Red Bull Ford"
+  },
+  {
+    name: "TGR Haas F1 Team",
+    country: "USA",
+    drivers: [{ name: "Esteban Ocon", number: 31 }, { name: "Oliver Bearman", number: 87 }],
+    engine: "Ferrari"
+  }
+];
+
+// Generate the string representation for Gemini prompt
+const GRID_INFO_STRING = `
 OFFICIAL 2026 GRID DATA (Use this for "Home Race" calculations):
-1. McLaren Mastercard (UK): Lando Norris (#1), Oscar Piastri (#81). Engine: Mercedes.
-2. Mercedes-AMG Petronas (Germany): George Russell (#63), Kimi Antonelli (#12). Engine: Mercedes.
-3. Oracle Red Bull Racing (Austria): Max Verstappen (#3), Isack Hadjar (#6). Engine: Red Bull Ford.
-4. Scuderia Ferrari HP (Italy): Charles Leclerc (#16), Lewis Hamilton (#44). Engine: Ferrari.
-5. Atlassian Williams (UK): Alex Albon (#23), Carlos Sainz (#55). Engine: Mercedes.
-6. Aston Martin Aramco (UK): Fernando Alonso (#14), Lance Stroll (#18). Engine: Honda.
-7. Audi Revolut (Germany): Nico Hülkenberg (#27), Gabriel Bortoleto (#5). Engine: Audi.
-8. Cadillac F1 Team (USA): Sergio Pérez (#11), Valtteri Bottas (#77). Engine: Ferrari.
-9. BWT Alpine (France): Pierre Gasly (#10), Franco Colapinto (#43). Engine: Mercedes.
-10. Visa Cash App RB (Italy): Liam Lawson (#30), Arvid Lindblad (#41). Engine: Red Bull Ford.
-11. TGR Haas F1 Team (USA): Esteban Ocon (#31), Oliver Bearman (#87). Engine: Ferrari.
+${OFFICIAL_GRID_2026.map((team, index) => 
+  `${index + 1}. ${team.name} (${team.country}): ${team.drivers[0].name} (#${team.drivers[0].number}), ${team.drivers[1].name} (#${team.drivers[1].number}). Engine: ${team.engine}.`
+).join('\n')}
 `;
 
 const PROVISIONAL_CALENDAR_2026 = `
@@ -97,7 +159,7 @@ export const fetchF1Schedule = async (): Promise<F1Race[]> => {
 
       ${PROVISIONAL_CALENDAR_2026}
 
-      ${GRID_INFO_2026}
+      ${GRID_INFO_STRING}
       `,
       config: {
         responseMimeType: "application/json",

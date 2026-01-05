@@ -23,6 +23,18 @@ export interface CalendarEvent {
   endTime: string; // ISO string
 }
 
+export interface Driver {
+  name: string;
+  number: number;
+}
+
+export interface Team {
+  name: string;
+  country: string;
+  drivers: Driver[];
+  engine: string;
+}
+
 export enum LoadingState {
   IDLE = 'IDLE',
   LOADING = 'LOADING',

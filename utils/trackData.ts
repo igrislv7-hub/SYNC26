@@ -1,7 +1,18 @@
-// Official Wikimedia Commons SVG Maps for F1 Circuits
-// Selected for clean lines and transparency to work with the 3D visualizer
+// Track Image Data Utilities
 
-const TRACK_IMAGE_URLS: Record<string, string> = {
+// Fallback image for when a specific track layout isn't found
+// Using a high-quality transparent PNG of a chequered flag as the safe default
+export const GENERIC_TRACK_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Chequered_flag.svg/512px-Chequered_flag.svg.png";
+
+// TIER 1: Priority / Premium Maps (e.g. Shutterstock or Official Assets)
+// Add URLs here to override the standard Wikimedia maps
+const PRIORITY_TRACK_MAPS: Record<string, string> = {
+    // "monaco": "https://shutterstock.com/.../monaco.jpg",
+};
+
+// TIER 2: Standard Wikimedia Commons SVG Maps
+// Selected for clean lines, transparency, and compatibility with the 3D visualizer filters
+const WIKIMEDIA_TRACK_MAPS: Record<string, string> = {
   // Madrid (New for 2026)
   "madrid": "https://upload.wikimedia.org/wikipedia/commons/8/80/Circuito_de_Madrid_IFEMA_Valdebebas.svg",
   "ifema": "https://upload.wikimedia.org/wikipedia/commons/8/80/Circuito_de_Madrid_IFEMA_Valdebebas.svg",
@@ -14,6 +25,7 @@ const TRACK_IMAGE_URLS: Record<string, string> = {
   // Saudi Arabia
   "saudi": "https://upload.wikimedia.org/wikipedia/commons/5/51/Jeddah_Corniche_Circuit_2021.svg",
   "jeddah": "https://upload.wikimedia.org/wikipedia/commons/5/51/Jeddah_Corniche_Circuit_2021.svg",
+  "corniche": "https://upload.wikimedia.org/wikipedia/commons/5/51/Jeddah_Corniche_Circuit_2021.svg",
   
   // Australia
   "australia": "https://upload.wikimedia.org/wikipedia/commons/7/77/Albert_Park_Circuit_2022.svg",
@@ -44,6 +56,7 @@ const TRACK_IMAGE_URLS: Record<string, string> = {
   "canada": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Circuit_Gilles_Villeneuve.svg",
   "montreal": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Circuit_Gilles_Villeneuve.svg",
   "villeneuve": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Circuit_Gilles_Villeneuve.svg",
+  "gilles": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Circuit_Gilles_Villeneuve.svg",
   
   // Spain (Catalunya - Kept for reference, though 2026 is Madrid)
   "spain": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Circuit_de_Catalunya_2021.svg",
@@ -90,6 +103,7 @@ const TRACK_IMAGE_URLS: Record<string, string> = {
   // Mexico
   "mexico": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Aut%C3%B3dromo_Hermanos_Rodr%C3%ADguez_2015.svg",
   "rodriguez": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Aut%C3%B3dromo_Hermanos_Rodr%C3%ADguez_2015.svg",
+  "hermanos": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Aut%C3%B3dromo_Hermanos_Rodr%C3%ADguez_2015.svg",
   
   // Brazil (Interlagos)
   "brazil": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Circuit_Interlagos.svg",
@@ -109,31 +123,52 @@ const TRACK_IMAGE_URLS: Record<string, string> = {
   "yas": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Yas_Marina_Circuit_2021.svg"
 };
 
-const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+// Helper to normalize strings for comparison
+const normalize = (s: string) => {
+    if (!s) return "";
+    return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+};
 
-// Disable vector path fallback
 export const getTrackPath = (circuitName: string, grandPrixName: string): string | null => {
+  // Vector path features disabled to prioritize SVG image rendering
   return null; 
 };
 
-export const getTrackImage = (circuitName: string, grandPrixName: string): string | null => {
+/**
+ * Robustly fetches the track image URL.
+ * 1. Checks specific 2026 calendar logic (Madrid > Barcelona).
+ * 2. Checks PRIORITY_TRACK_MAPS (e.g. Premium/Shutterstock).
+ * 3. Checks WIKIMEDIA_TRACK_MAPS (Standard SVGs).
+ * 4. Returns GENERIC_TRACK_IMAGE if all else fails.
+ */
+export const getTrackImage = (circuitName: string, grandPrixName: string): string => {
   const cName = normalize(circuitName);
   const gpName = normalize(grandPrixName);
-  const searchTerms = [cName, gpName];
-
-  // Logic to ensure 2026 Spanish GP gets Madrid
+  
+  // --- SPECIAL CASE LOGIC FOR 2026 ---
+  
+  // Handle Spain 2026: Madrid vs Barcelona
+  // If the GP is "Spanish GP" but the circuit implies Madrid, return Madrid map.
   if (gpName.includes("spain") || gpName.includes("spanish")) {
     if (cName.includes("madrid") || cName.includes("ifema") || cName.includes("valdebebas")) {
-      return TRACK_IMAGE_URLS["madrid"];
+       return WIKIMEDIA_TRACK_MAPS["madrid"];
     }
   }
 
-  for (const term of searchTerms) {
-    for (const [key, url] of Object.entries(TRACK_IMAGE_URLS)) {
-      if (term.includes(key)) {
-        return url;
+  // --- PRIORITY LOOKUP (Tier 1) ---
+  for (const [key, url] of Object.entries(PRIORITY_TRACK_MAPS)) {
+      if (cName.includes(key) || gpName.includes(key)) {
+          return url;
       }
-    }
   }
-  return null;
+
+  // --- STANDARD LOOKUP (Tier 2) ---
+  for (const [key, url] of Object.entries(WIKIMEDIA_TRACK_MAPS)) {
+      if (cName.includes(key) || gpName.includes(key)) {
+          return url;
+      }
+  }
+
+  // --- FALLBACK ---
+  return GENERIC_TRACK_IMAGE;
 }
